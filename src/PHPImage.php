@@ -985,7 +985,8 @@ class PHPImage {
 				}
 			}
 			// Draw text
-			imagefttext($this->img, $fontSize, $angle, $x + $offsetx, $lineY + $offsety, imagecolorallocatealpha($this->img, $fontColor[0], $fontColor[1], $fontColor[2], (1 - $opacity) * 127), $fontFile, $line);
+            // add some bug fix for php 8.2 
+			imagefttext($this->img, $fontSize, $angle,(int) abs($x + $offsetx), (int) abs($lineY + $offsety), imagecolorallocatealpha($this->img, $fontColor[0], $fontColor[1], $fontColor[2], (1 - $opacity) * 127), $fontFile, $line);
 		}
 		$this->afterUpdate();
 		return $this;
