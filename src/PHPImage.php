@@ -52,18 +52,20 @@
 
 namespace Ay4t\PHPImage;
 
+use GdImage;
+
 class PHPImage {
 	/**
 	 * Canvas resource
 	 *
-	 * @var resource
+	 * @var resource|GdImage
 	 */
 	protected $img;
 
 	/**
 	 * Canvas resource
 	 *
-	 * @var resource
+	 * @var resource|GdImage
 	 */
 	protected $img_copy;
 
@@ -163,7 +165,7 @@ class PHPImage {
 	/**
 	 * Default folder mode to be used if folder structure needs to be created
 	 *
-	 * @var String
+	 * @var int
 	 */
 	protected $folderMode = 0755;
 
@@ -173,20 +175,17 @@ class PHPImage {
 	 *
 	 * @param string|integer $mixed (optional) file or width
 	 * @param integer $height (optional)
-	 * @return $this
 	 */
 	public function __construct($mixed=null, $height=null){
 		//Check if GD extension is loaded
 		if (!extension_loaded('gd') && !extension_loaded('gd2')) {
 			$this->handleError('GD is not loaded');
-			return false;
 		}
 		if($mixed !== null && $height !== null){
 			$this->initialiseCanvas($mixed, $height);
 		}else if($mixed !== null && is_string($mixed)){
 			$image = $this->setDimensionsFromImage($mixed);
 			$image->draw($mixed);
-			return $image;
 		}
 	}
 
@@ -225,7 +224,7 @@ class PHPImage {
 	 */
 	protected function shadowCopy(){
 		$this->initialiseCanvas($this->width, $this->height, 'img_copy');
-		imagecopy($this->img_copy, $this->img, 0, 0, 0, 0, $this->width, $this->height);
+		imagecopy( $this->img_copy, $this->img, 0, 0, 0, 0, $this->width, $this->height);
 	}
 
 	/**
@@ -283,8 +282,8 @@ class PHPImage {
 	/**
 	 * Set image dimensions from an image source
 	 *
-	 * @param String $file
-	 * @return $this
+	 * @param string $file
+	 * @return mixed
 	 */
 	public function setDimensionsFromImage($file){
 		if($info = $this->getImageInfo($file, false)){
@@ -409,11 +408,10 @@ class PHPImage {
 	/**
 	 * Handle errors
 	 *
-	 * @param String $error
-	 *
-	 * @throws Exception
+	 * @param string $error
+	 * @throws \Exception
 	 */
-	protected function handleError($error){
+	protected function handleError(string $error){
 		throw new \Exception($error);
 	}
 
@@ -456,7 +454,7 @@ class PHPImage {
 	 *
 	 * Will result in two images being saved (test_100x100.jpg and test_50x50.jpg) with 100x100 being cropped to the center.
 	 *
-	 * @param String $path
+	 * @param string $path
 	 * @param array $dimensions Array of `resize` arguments to run and save ie: array(100, 100, true, true)
 	 * @return $this
 	 */
@@ -499,7 +497,7 @@ class PHPImage {
 	 *
 	 * @param integer $targetWidth
 	 * @param integer $targetHeight
-	 * @param boolean|String $crop T, B, C, L, R
+	 * @param boolean|string $crop T, B, C, L, R
 	 * @param boolean $upscale
 	 * @return $this
 	 */
@@ -619,7 +617,7 @@ class PHPImage {
 	/**
 	 * Save the image
 	 *
-	 * @param String $path
+	 * @param string $path
 	 * @param boolean $show
 	 * @param boolean $destroy
 	 * @return $this
@@ -828,9 +826,9 @@ class PHPImage {
 	 *
 	 * Accepts x/y properties from CSS background-position (left, center, right, top, bottom, percentage and pixels)
 	 *
-	 * @param String $file
-	 * @param String|integer $x
-	 * @param String|integer $y
+	 * @param string $file
+	 * @param string|integer $x
+	 * @param string|integer $y
 	 * @see http://www.php.net/manual/en/function.imagecopyresampled.php
 	 * @see http://www.w3schools.com/cssref/pr_background-position.asp
 	 * @return $this
@@ -915,7 +913,7 @@ class PHPImage {
 	 * - array $strokeColor
 	 * - String $fontFile
 	 *
-	 * @param String $text
+	 * @param string $text
 	 * @param array $options
 	 * @see http://www.php.net/manual/en/function.imagefttext.php
 	 * @return $this
@@ -1015,8 +1013,8 @@ class PHPImage {
 	 *
 	 * @param integer $fontSize
 	 * @param integer $angle
-	 * @param String $fontFile
-	 * @param String $text
+	 * @param string $fontFile
+	 * @param string $text
 	 * @param integer $width
 	 * @return integer
 	 */
@@ -1038,8 +1036,8 @@ class PHPImage {
 	 *
 	 * @param integer $fontSize
 	 * @param integer $angle
-	 * @param String $fontFile
-	 * @param String $text
+	 * @param string $fontFile
+	 * @param string $text
 	 * @param integer $width
 	 * @param integer $height
 	 * @return integer
@@ -1063,7 +1061,7 @@ class PHPImage {
 	 *
 	 * @param integer $fontSize
 	 * @param integer $angle
-	 * @param String $fontFile
+	 * @param string $fontFile
 	 * @param array lines
 	 * @return integer
 	 */
@@ -1082,7 +1080,7 @@ class PHPImage {
 	/**
 	 * Draw multi-line text box and auto wrap text
 	 *
-	 * @param String $text
+	 * @param string $text
 	 * @param array $options
 	 * @return $this
 	 */
@@ -1111,11 +1109,11 @@ class PHPImage {
 	/**
 	 * Helper to wrap text
 	 *
-	 * @param String $text
+	 * @param string $text
 	 * @param integer $width
 	 * @param integer $fontSize
 	 * @param integer $angle
-	 * @param String $fontFile
+	 * @param string $fontFile
 	 * @return String
 	 */
 	protected function wrap($text, $width=100, $fontSize=12, $angle=0, $fontFile=null){
@@ -1205,7 +1203,7 @@ class PHPImage {
 	/**
 	 * Set's global text vertical alignment
 	 *
-	 * @param String $align
+	 * @param string $align
 	 * @return $this
 	 */
 	public function setAlignVertical($align='top'){
@@ -1216,7 +1214,7 @@ class PHPImage {
 	/**
 	 * Set's global text horizontal alignment
 	 *
-	 * @param String $align
+	 * @param string $align
 	 * @return $this
 	 */
 	public function setAlignHorizontal($align='left'){
@@ -1304,8 +1302,8 @@ class PHPImage {
 	/**
 	 * Set's global output type
 	 *
-	 * @param String $type
-	 * @param String $quality
+	 * @param string $type
+	 * @param string $quality
 	 * @return $this
 	 */
 	public function setOutput($type, $quality = null){
