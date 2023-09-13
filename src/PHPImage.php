@@ -77,8 +77,6 @@ class PHPImage {
 
 	/**
 	 * Global font file
-	 *
-	 * @var String
 	 */
 	protected $fontFile;
 
@@ -98,15 +96,11 @@ class PHPImage {
 
 	/**
 	 * Global text vertical alignment
-	 *
-	 * @var String
 	 */
 	protected $alignVertical = 'top';
 
 	/**
 	 * Global text horizontal alignment
-	 *
-	 * @var String
 	 */
 	protected $alignHorizontal = 'left';
 
@@ -299,6 +293,30 @@ class PHPImage {
 		} else {
 			$this->handleError($file . ' is not readable!');
 		}
+	}
+
+	/**
+	 * Calculate the size of a text box
+	 *
+	 * @param string $text
+	 * @param string $fontFile
+	 * @param integer $fontSize
+	 * @param integer $fontAngle
+	 * @return array
+	 */
+	public function calculateTextBox($text, $fontFile, $fontSize, $fontAngle){
+		$rect = imagettfbbox($fontSize, $fontAngle, $fontFile, $text);
+		$minX = min(array($rect[0], $rect[2], $rect[4], $rect[6]));
+		$maxX = max(array($rect[0], $rect[2], $rect[4], $rect[6]));
+		$minY = min(array($rect[1], $rect[3], $rect[5], $rect[7]));
+		$maxY = max(array($rect[1], $rect[3], $rect[5], $rect[7]));
+		return array(
+			"left"   => abs($minX) - 1,
+			"top"    => abs($minY) - 1,
+			"width"  => $maxX - $minX,
+			"height" => $maxY - $minY,
+			"box"    => $rect
+		);
 	}
 
 	/**
