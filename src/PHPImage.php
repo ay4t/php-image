@@ -429,6 +429,11 @@ class PHPImage {
 		return $this;
 	}
 
+	public function isPotrait($file) {
+		list($width, $height) = getimagesize($file);
+		return $height > $width;
+	}
+
 	/**
 	 * Crop an image
 	 *
